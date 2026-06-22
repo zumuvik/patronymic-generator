@@ -24,6 +24,9 @@ pkgs.mkShell {
     jdk17
     gradle
     androidComposition.androidsdk
+    # AAPT2 на NixOS требует эти библиотеки
+    libcxx
+    zlib
   ];
 
   shellHook = ''
@@ -31,13 +34,15 @@ pkgs.mkShell {
     export ANDROID_SDK_ROOT="$ANDROID_HOME"
     export JAVA_HOME="${pkgs.jdk17.home}"
 
+    # AAPT2 daemon на NixOS не находит библиотеки без LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH="${pkgs.libcxx}/lib:${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib"
+
     echo "✅ Nix shell ready!"
     echo "   ANDROID_HOME = $ANDROID_HOME"
     echo "   JAVA_HOME    = $JAVA_HOME"
     echo ""
-    echo "Now run:"
+    echo "Run:"
     echo "  cd android"
-    echo "  gradle wrapper --gradle-version=8.7"
     echo "  ./gradlew assembleDebug"
   '';
 }
