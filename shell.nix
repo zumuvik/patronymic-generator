@@ -1,4 +1,9 @@
-{ pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:
+{ pkgs ? import <nixpkgs> {
+  config = {
+    allowUnfree = true;
+    android_sdk.accept_license = true;
+  };
+} }:
 
 let
   androidComposition = pkgs.androidenv.composeAndroidPackages {
@@ -30,6 +35,9 @@ pkgs.mkShell {
     echo "   ANDROID_HOME = $ANDROID_HOME"
     echo "   JAVA_HOME    = $JAVA_HOME"
     echo ""
-    echo "Run: cd android && gradle wrapper --gradle-version=8.7 && ./gradlew assembleDebug"
+    echo "Now run:"
+    echo "  cd android"
+    echo "  gradle wrapper --gradle-version=8.7"
+    echo "  ./gradlew assembleDebug"
   '';
 }
