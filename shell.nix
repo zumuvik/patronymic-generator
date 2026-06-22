@@ -1,7 +1,6 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> { config.allowUnfree = true; } }:
 
 let
-  # Android SDK platform and build tools
   androidComposition = pkgs.androidenv.composeAndroidPackages {
     toolsVersion = "latest";
     platformToolsVersion = "latest";
@@ -25,8 +24,6 @@ pkgs.mkShell {
   shellHook = ''
     export ANDROID_HOME="${androidComposition.androidsdk}/libexec/android-sdk"
     export ANDROID_SDK_ROOT="$ANDROID_HOME"
-
-    # Gradle needs to know where JAVA_HOME is
     export JAVA_HOME="${pkgs.jdk17.home}"
 
     echo "✅ Nix shell ready!"
