@@ -41,10 +41,6 @@ android {
         compose = true
     }
 
-    // NixOS: AGP-шный AAPT2 не работает, используем SDK-шный
-    aaptOptions {
-        aapt2FromMavenOverride = "${System.getenv("ANDROID_HOME")}/build-tools/34.0.0/aapt2"
-    }
 }
 
 dependencies {

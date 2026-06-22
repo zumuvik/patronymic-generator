@@ -37,6 +37,9 @@ pkgs.mkShell {
     # AAPT2 на NixOS: все библиотеки в нестандартных путях
     export LD_LIBRARY_PATH="${pkgs.libcxx}/lib:${pkgs.zlib}/lib:${pkgs.stdenv.cc.cc.lib}/lib"
 
+    # Заставляем AGP использовать SDK-шный AAPT2 вместо своего (пропатчен под NixOS)
+    export ORG_GRADLE_PROJECT_android_aapt2FromMavenOverride="$ANDROID_HOME/build-tools/34.0.0/aapt2"
+
     # Проверка AAPT2
     AAPT2="$ANDROID_HOME/build-tools/34.0.0/aapt2"
     if [ -f "$AAPT2" ]; then
