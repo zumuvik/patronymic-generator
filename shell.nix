@@ -54,6 +54,6 @@ pkgs.mkShell {
     echo "   ANDROID_HOME = $ANDROID_HOME"
     echo "   JAVA_HOME    = $JAVA_HOME"
     echo ""
-    echo "Run: cd android && ./gradlew assembleDebug"
+    echo "Run: cd android && ./gradlew assembleDebug -Pandroid.aapt2FromMavenOverride=\$ANDROID_HOME/build-tools/34.0.0/aapt2"
   '';
 }
