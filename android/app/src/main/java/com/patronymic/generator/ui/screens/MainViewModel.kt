@@ -6,8 +6,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.patronymic.generator.data.Gender
-import com.patronymic.generator.data.PatronymicRepository
+import com.patronymic.generator.data.LocalPatronymicGenerator
 import com.patronymic.generator.data.PatronymicResult
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,11 +16,10 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel главного экрана генератора отчеств.
- * Управляет состоянием ввода, генерации и визуальных эффектов.
+ * Использует [LocalPatronymicGenerator] — никаких сетевых запросов,
+ * всё работает офлайн прямо на устройстве.
  */
 class MainViewModel : ViewModel() {
-
-    private val repository = PatronymicRepository()
 
     private val _fatherName = MutableStateFlow("")
     val fatherName: StateFlow<String> = _fatherName.asStateFlow()
@@ -47,7 +47,6 @@ class MainViewModel : ViewModel() {
 
     fun updateFatherName(name: String) {
         _fatherName.value = name
-        // Clear previous result when name changes
         _result.value = null
         _error.value = null
     }
@@ -70,16 +69,17 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
+            _result.value = null
 
-            repository.generatePatronymic(name).fold(
-                onSuccess = { patronymic ->
-                    _result.value = patronymic
-                },
-                onFailure = { e ->
-                    // Fallback: локальная генерация при ошибке сети
-                    _error.value = "Ошибка сети: ${e.localizedMessage ?: "неизвестная ошибка"}"
-                },
-            )
+            // Небольшая задержка, чтобы взрыв частиц успел проиграться
+            delay(300)
+
+            val result = LocalPatronymicGenerator.generate(name)
+            if (result != null) {
+                _result.value = result
+            } else {
+                _error.value = "Имя «$name» не поддерживается"
+            }
 
             _isLoading.value = false
             _explosionTrigger.value = false

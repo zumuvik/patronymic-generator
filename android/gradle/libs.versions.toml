@@ -6,8 +6,6 @@ activityCompose = "1.9.0"
 navigationCompose = "2.7.7"
 lifecycleRuntime = "2.8.2"
 work = "2.9.0"
-retrofit = "2.9.0"
-okhttp = "4.12.0"
 coroutines = "1.8.1"
 coreSplashscreen = "1.0.1"
 coreKtx = "1.13.1"
@@ -29,11 +27,6 @@ compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-animation = { group = "androidx.compose.animation", name = "animation" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-
-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 

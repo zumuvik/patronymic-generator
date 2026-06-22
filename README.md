@@ -1,23 +1,24 @@
 # Patronymic Generator · Генератор Отчеств
 
-**Android-приложение** (Kotlin + Jetpack Compose) с **Python-бэкендом** (FastAPI) для генерации правильных русских отчеств. Стеклянный дизайн, летающие частицы, неоновая эстетика.
+**Android-приложение** (Kotlin + Jetpack Compose) для генерации правильных русских отчеств.  
+Полностью офлайн, никаких серверов. Стеклянный дизайн, летающие частицы, неон.
 
 <p float="left">
-  <img src="https://img.shields.io/badge/Python-3.11+-blue?logo=python" />
   <img src="https://img.shields.io/badge/Kotlin-2.0-purple?logo=kotlin" />
   <img src="https://img.shields.io/badge/Compose-BOM%202024.06-green" />
-  <img src="https://img.shields.io/badge/FastAPI-0.111-teal?logo=fastapi" />
+  <img src="https://img.shields.io/badge/API-26%2B-orange" />
+  <img src="https://img.shields.io/badge/offline-yes-brightgreen" />
 </p>
 
 ---
 
 ## ✨ Фичи
 
-- **Генерация отчеств** — полная логика с 40+ исключениями (Никита → Никитич, Илья → Ильич, Лев → Львович…)
-- **Glassmorphism UI** — эффект жидкого стекла, размытие заднего плана (RenderEffect), неоновые рамки
-- **Живые анимации** — летающие частицы, spring-анимации полей, взрыв частиц при нажатии, letter-by-letter появление текста
-- **Агрессивные уведомления** — WorkManager с кликбейтными хуками каждые 3 часа
-- **Python + Android** — FastAPI REST API, Retrofit на клиенте
+- **Генерация отчеств** — полная логика на Kotlin, 40+ исключений (Никита → Никитич, Илья → Ильич, Лев → Львович…)
+- **Glassmorphism UI** — эффект жидкого стекла, размытие (RenderEffect), неоновые рамки
+- **Живые анимации** — летающие частицы, spring-поля, взрыв частиц при нажатии, letter-by-letter текст
+- **Агрессивные уведомления** — WorkManager, 20 кликбейтных хуков каждые 3 часа
+- **Полностью офлайн** — не требует интернета, все вычисления на устройстве
 
 ---
 
@@ -25,94 +26,79 @@
 
 ```
 patronymic-generator/
-├── patronymic-core/          # Python: логика генерации
-│   ├── generator.py          #   правила + исключения
-│   ├── server.py             #   FastAPI сервер
-│   └── test_generator.py     #   49 тестов
-├── android/                  # Android: Kotlin + Compose
-│   ├── app/src/main/java/com/patronymic/generator/
-│   │   ├── ui/theme/         #   Тёмная тема + Glassmorphism модификаторы
-│   │   ├── ui/effects/       #   Particle system (40 частиц + взрыв)
-│   │   ├── ui/components/    #   GlassCard, GlassTextField, GenerateButton...
-│   │   ├── ui/screens/       #   MainScreen + MainViewModel
-│   │   ├── service/          #   WorkManager уведомления (20 хуков)
-│   │   └── data/             #   Retrofit API слой
-│   └── build.gradle.kts      #   Gradle с Compose, Retrofit, WorkManager
-├── INTEGRATION_GUIDE.md      # Интеграция Python ↔ Android
-└── shell.nix                 # Среда сборки для NixOS
+├── android/                          # Android: Kotlin + Compose
+│   └── app/src/main/java/com/patronymic/generator/
+│       ├── data/
+│       │   └── LocalPatronymicGenerator.kt   ← вся логика генерации
+│       │   └── PatronymicResult.kt           ← модель данных
+│       ├── ui/theme/                 #   Тёмная тема + Glassmorphism модификаторы
+│       ├── ui/effects/               #   Particle system (40 частиц + взрыв)
+│       ├── ui/components/            #   GlassCard, GlassTextField, GenerateButton...
+│       ├── ui/screens/               #   MainScreen + MainViewModel
+│       └── service/                  #   WorkManager уведомления (20 хуков)
+├── patronymic-core/                  # Python-прототип (для сверки, не обязателен)
+│   ├── generator.py
+│   ├── server.py
+│   └── test_generator.py             # 49 тестов
+├── README.md
+└── shell.nix                         # Среда сборки для NixOS
 ```
 
 ---
 
-## 🚀 Быстрый старт
+## 🚀 Сборка APK
 
-### 1. Python сервер
-
-```bash
-cd patronymic-core
-pip install -r requirements.txt
-python server.py
-# → http://localhost:8000
-# → http://localhost:8000/api/docs (Swagger)
-```
-
-Проверка:
-```bash
-curl http://localhost:8000/api/generate?name=Александр
-# → {"father_name":"Александр","son_patronymic":"Александрович","daughter_patronymic":"Александровна"}
-```
-
-### 2. Android приложение
-
-#### Вариант A: Android Studio
+### Вариант A: Android Studio
 ```bash
 # Открыть android/ как проект
-# Build → Build APK
-# Или просто Run на устройстве/эмуляторе
+# Build → Build Bundle(s) / APK(s) → Build APK
 ```
 
-#### Вариант B: CLI
-
-**Требования:** Java 17+, Android SDK 34
-
+### Вариант B: CLI
 ```bash
+# Требования: Java 17+, Android SDK 34
+
 cd android
 
 # Gradle wrapper (если нет gradlew)
 gradle wrapper --gradle-version=8.7
 
-# Сборка APK
+# Сборка
 ./gradlew assembleDebug
 
 # APK: app/build/outputs/apk/debug/app-debug.apk
 ```
 
-#### Вариант C: NixOS
-
+### Вариант C: NixOS
 ```bash
 nix-shell shell.nix
 cd android
 ./gradlew assembleDebug
 ```
 
-> **Важно:** Для эмулятора URL уже настроен (`10.0.2.2:8000`). Для реального устройства замените IP в `PatronymicRepository.kt` на IP вашего ПК в локальной сети.
+---
+
+## 📱 Использование
+
+1. Запусти приложение
+2. Введи имя отца (например, **Александр**)
+3. Выбери: Сын / Дочь / Оба варианта
+4. Нажми **Сгенерировать** — наслаждайся взрывом частиц!
+5. Отчество появится с letter-by-letter анимацией
+6. Жми **Копировать** — отчество в буфере обмена
+
+Уведомления будут приходить каждые 3 часа и напоминать об отчествах.
 
 ---
 
-## 🧪 Тесты Python
+## 🧪 Python-тесты (для разработчиков)
 
 ```bash
 cd patronymic-core
-pip install pytest
+pip install -r requirements.txt
 pytest test_generator.py -v
 # 49 passed
 ```
-
----
-
-## 📱 Скриншоты
-
-_(добавьте свои скриншоты UI)_
 
 ---
 
@@ -120,13 +106,13 @@ _(добавьте свои скриншоты UI)_
 
 | Компонент | Технология |
 |-----------|-----------|
-| Backend | Python 3.11+, FastAPI, Uvicorn |
-| Android | Kotlin 2.0, Jetpack Compose, Material3 |
-| UI-эффекты | Glassmorphism, RenderEffect, Canvas Particles |
-| Анимации | Spring animations, InfiniteTransition, Animatable |
-| Сеть | Retrofit 2, OkHttp, Gson |
+| Язык | Kotlin 2.0 |
+| UI | Jetpack Compose + Material3 |
+| Эффекты | Glassmorphism, RenderEffect, Canvas Particles |
+| Анимации | Spring, InfiniteTransition, Animatable |
 | Уведомления | WorkManager 2.9 |
 | Сборка | Gradle 8.5, Android Gradle Plugin 8.5 |
+| Прототип | Python 3.11+ (FastAPI, не обязателен) |
 
 ---
 
